@@ -87,9 +87,12 @@ export function useSwitchTheme() {
 }
 
 function useHtmlLang() {
+  const config = useAppConfig();
   useEffect(() => {
     const lang = getISOLang();
     const htmlLang = document.documentElement.lang;
+
+    config.update((config) => (config.dontShowMaskSplashScreen = true));
 
     if (lang !== htmlLang) {
       document.documentElement.lang = lang;

@@ -1,19 +1,14 @@
-.home_sidebar-body__9zbei {
-  // custom style list chat
-  max-height: 45%;
-}
-
 .custom-style-web-stream {
   // add style : stream
   margin-top: 10px;
   width: 100%;
-  height: 30%;
+  height: 40%;
   overflow: hidden;
 }
 .cam-stream {
   position: relative;
-  width: 100%;
-  height: 100%;
+  //width: 100%;
+  //height: 100%;
 }
 .cam-stream video {
   object-fit: cover;
@@ -22,14 +17,27 @@
   border-radius: 4%;
 }
 @media only screen and (max-width: 600px) {
+  .sidebar-header {
+    position: relative;
+  }
   .custom-style-web-stream {
-    position: fixed; /* Đặt vị trí cố định */
-    top: 0; /* Đặt vị trí trên cùng */
-    left: 0; /* Đặt vị trí trái */
-    width: 100%; /* Chiều rộng 100% */
-    height: 14%;
-    z-index: 9999; /* Đặt z-index cao hơn để đảm bảo nằm trên cùng */
+    display: block;
+    position: absolute;
+    top: 15%;
+    left: 0;
     margin: 0;
     padding: 0;
+    height: 30%;
+    z-index: 9999;
+  }
+
+  .cam-stream {
+    position: relative;
+  }
+  .cam-stream video {
+    width: 100%;
+    height: 30%;
+    border-radius: 10px;
+    padding: 0 6px;
   }
 }
