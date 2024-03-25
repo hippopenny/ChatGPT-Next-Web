@@ -30,6 +30,7 @@ async function updateRequest(req: NextRequest) {
   let messages = reqBody["messages"];
   let lastMessage = messages[messages.length - 1];
   lastMessage.content = await genRagMsg(lastMessage, reqBody["userId"]);
+  console.log("lastMessage.content::", lastMessage.content);
   delete reqBody["userId"];
 
   let newReq = new NextRequest(req.nextUrl, {

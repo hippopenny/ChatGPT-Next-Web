@@ -18,18 +18,30 @@ export async function genRagMsg(lastMessage: any, userId: any) {
       );
       const result = await response.json();
 
-      const resultData = result.collection;
+      const resultCollection = result.collection;
+      const resultBase = result.base;
       // dataSearch -> context
-      let context = "";
+      let contextCollection = "";
+      let contextBase = "";
       let firstIteration = true;
-      for (let key in resultData) {
+      for (let key in resultCollection) {
         if (firstIteration) {
-          context = resultData[key];
+          contextCollection = resultCollection[key];
           firstIteration = false;
         } else {
-          context = `${context}, ${resultData[key]}`;
+          contextCollection = `${contextCollection}, ${resultCollection[key]}`;
         }
       }
+      firstIteration = true;
+      for (let key in resultBase) {
+        if (firstIteration) {
+          contextBase = resultBase[key];
+          firstIteration = false;
+        } else {
+          contextBase = `${contextBase}, ${resultBase[key]}`;
+        }
+      }
+      let context = `${contextBase}:.\n${contextCollection}`;
       // form rag
       return `
       You are a Q&A expert system. Your responses must always be rooted in the context provided for each query. Here are some guidelines to follow:
