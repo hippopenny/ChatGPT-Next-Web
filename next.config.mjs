@@ -19,6 +19,7 @@ const nextConfig = {
     IDAPPFB: process.env.IDAPPFB,
     IDAPPSECRET: process.env.IDAPPSECRET,
     NEXTAUTH_URL: process.env.AUTH_URL,
+    DYNAMODB: process.env.DYNAMODB,
   },
   webpack(config) {
     config.module.rules.push({

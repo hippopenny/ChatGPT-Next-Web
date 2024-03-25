@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import FacebookProvider from "next-auth/providers/facebook";
+import { addUserNextChat, getUserNextChat } from "../../hippo/hippofunc";
 
 const handle = NextAuth({
   providers: [
@@ -16,6 +17,11 @@ const handle = NextAuth({
       return baseUrl + "#chat";
     },
     async session({ session, user, token }) {
+      if (session && session.user) {
+        session.user.social = "facebook";
+      }
+
+      // session.user?.social = "facebook";
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {

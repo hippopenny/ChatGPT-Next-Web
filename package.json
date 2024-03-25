@@ -23,7 +23,7 @@
     "@svgr/webpack": "^6.5.1",
     "@vercel/analytics": "^0.1.11",
     "@vercel/speed-insights": "^1.0.2",
-    "aws-sdk": "^2.1582.0",
+    "aws-sdk": "^2.1584.0",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",

@@ -11,7 +11,7 @@ import { useMaskStore } from "../store/mask";
 import { ChatAction } from "../components/chat";
 import Locale from "../locales";
 import BreakIcon from "../icons/bot.svg";
-import Auth from "./hippo/Auth";
+import Auth from "./hippo/auth";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
