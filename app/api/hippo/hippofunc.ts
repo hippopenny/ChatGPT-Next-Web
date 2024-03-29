@@ -58,26 +58,3 @@ export async function searchVidHippo(text: string) {
   localStorage.setItem("pathVidStream", dataPathResult);
   return res.data;
 }
-
-/**
- * add user to db
- */
-export async function addUserNextChat(user) {
-  const res = await axios.post("/api/database", {
-    idUser: user.idUser,
-    nameUser: user.nameUser,
-    emailUser: user.emailUser,
-    balanceUser: user.balanceUser,
-    socialUser: user.socialUser,
-  });
-  return res.data;
-}
-
-/**
- * get User from db
- */
-export async function getUserNextChat(idUser: string) {
-  const res = await axios.get(`/api/database?idUser=${idUser}`);
-
-  return res.data;
-}

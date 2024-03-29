@@ -75,3 +75,26 @@
     }
   }
 }
+
+.authSocial {
+  margin-top: 20px;
+  background-color: #1877f2;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.inforSocial {
+  margin: 10px 0px;
+}
+.inforSocial p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #333;
+}

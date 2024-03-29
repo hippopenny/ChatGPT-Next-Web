@@ -1,74 +1,31 @@
-// mark as client component
 "use client";
 
-// importing necessary functions
-import { useSession, signIn, signOut } from "next-auth/react";
-import { addUserNextChat, getUserNextChat } from "../../api/hippo/hippofunc";
 import { useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
 export default function Auth() {
-  const { data: session } = useSession();
-  async function handleUserDataBase() {
-    const idUser = localStorage.getItem("userId");
-
-    const resultUser = await getUserNextChat(idUser);
-    if (resultUser === null) {
-      const user = {
-        idUser: idUser,
-        balanceUser: 100,
-      };
-      await addUserNextChat(user);
-    }
-  }
-
-  // idUser in DB ? "" : save(user)
-  useEffect(() => {
-    handleUserDataBase();
-  }, []);
-
-  // when login: social in user ? "" : add social to user
-  useEffect(() => {
-    addSocial(session);
-  }, [session]);
-
-  const addSocial = async (session) => {
-    if (session && session.user) {
-      const social = session.user.social;
-      const idUser = localStorage.getItem("userId");
-      const user = await getUserNextChat(idUser);
-      const socialUser = user.social;
-      if (socialUser && socialUser[social]) {
-        return;
-      } else {
-        const newUser = { ...user, socialUser: { [social]: session } };
-        await addUserNextChat(newUser);
-      }
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+  );
+  const signInAnonymously = async () => {
+    try {
+    } catch (error) {
+      console.error("Error signing in anonymously:", error);
     }
   };
 
-  if (session && session.user) {
-    if (session.user.email)
-      return (
-        <>
-          <p>User name: {session.user?.name}</p>
-          <p>Email: {session.user?.email}</p>
-          <button onClick={() => signOut()}>Sign out</button>
-        </>
-      );
-    else {
-      return (
-        <>
-          <p>User name: {session.user?.name}</p>
-          <p>Email: null</p>
-          <button onClick={() => signOut()}>Sign out</button>
-        </>
-      );
-    }
-  }
+  // idUser in DB ? "" : save(user)
+  useEffect(() => {
+    signInAnonymously();
+    // supabaseData();
+  }, []);
+
+  // when login: social in user ? "" : add social to user
 
   return (
     <>
-      <button onClick={() => signIn("facebook")}>Sign in with facebook</button>
+      <button className="authSocial">Sign in with facebook</button>
     </>
   );
 }

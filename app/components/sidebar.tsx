@@ -11,7 +11,6 @@ import { useMaskStore } from "../store/mask";
 import { ChatAction } from "../components/chat";
 import Locale from "../locales";
 import BreakIcon from "../icons/bot.svg";
-import Auth from "./hippo/auth";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -25,6 +24,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
+import Auth from "./hippo/Auth";
 import { showConfirm, showToast } from "./ui-lib";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {

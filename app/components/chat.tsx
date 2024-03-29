@@ -1167,7 +1167,6 @@ function _Chat() {
             </div>
           </div>
         )}
-
         <div className={`window-header-title ${styles["chat-body-title"]}`}>
           <div
             className={`window-header-main-title ${styles["chat-body-main-title"]}`}
@@ -1175,10 +1174,12 @@ function _Chat() {
           >
             {!session.topic ? DEFAULT_TOPIC : session.topic}
           </div>
-          <div className="window-header-sub-title">
+
+          {/* <div className="window-header-sub-title">
             {Locale.Chat.SubTitle(session.messages.length)}
-          </div>
+          </div> */}
         </div>
+
         <div className="window-actions">
           {!isMobileScreen && (
             <div className="window-action-button">
@@ -1204,7 +1205,6 @@ function _Chat() {
             </div>
           )}
         </div>
-
         <PromptToast
           showToast={!hitBottom}
           showModal={showPromptModal}

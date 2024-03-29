@@ -20,6 +20,9 @@ const nextConfig = {
     IDAPPSECRET: process.env.IDAPPSECRET,
     NEXTAUTH_URL: process.env.AUTH_URL,
     DYNAMODB: process.env.DYNAMODB,
+    JWT_SECRET: process.env.JWT_SECRET,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
   webpack(config) {
     config.module.rules.push({
