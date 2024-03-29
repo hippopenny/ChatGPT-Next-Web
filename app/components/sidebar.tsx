@@ -24,7 +24,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import Auth from "./hippo/Auth";
+import Auth from "./hippo/auth";
+import AuthAnonymous from "./hippo/auth-anonymous";
 import { showConfirm, showToast } from "./ui-lib";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -180,6 +181,7 @@ export function SideBar(props: { className?: string }) {
         <BreakIcon className="icon" /> Chat with me
       </div>
       <Auth />
+      <AuthAnonymous />
     </div>
   );
 }

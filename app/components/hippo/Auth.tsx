@@ -1,31 +1,31 @@
 "use client";
 
 import { useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./supabase";
 
 export default function Auth() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-  );
-  const signInAnonymously = async () => {
-    try {
-    } catch (error) {
-      console.error("Error signing in anonymously:", error);
-    }
+  useEffect(() => {}, []);
+  const handleOauthFB = async () => {
+    const { data, error } = await supabase.auth.linkIdentity({
+      provider: "facebook",
+    });
+    console.log("data oauth:::", data);
   };
-
-  // idUser in DB ? "" : save(user)
-  useEffect(() => {
-    signInAnonymously();
-    // supabaseData();
-  }, []);
-
-  // when login: social in user ? "" : add social to user
+  const handleOauthGitHub = async () => {
+    const { data, error } = await supabase.auth.linkIdentity({
+      provider: "github",
+    });
+    console.log("data oauth:::", data);
+  };
 
   return (
     <>
-      <button className="authSocial">Sign in with facebook</button>
+      <button className="authSocial" onClick={() => handleOauthFB()}>
+        Sign in facebook
+      </button>
+      <button className="authSocial" onClick={() => handleOauthGitHub()}>
+        Sign in github
+      </button>
     </>
   );
 }
