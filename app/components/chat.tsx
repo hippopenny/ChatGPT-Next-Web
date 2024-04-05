@@ -450,6 +450,7 @@ export function ChatActions(props: {
   const [showModelSelector, setShowModelSelector] = useState(false);
   const [showUploadImage, setShowUploadImage] = useState(false);
   const [showBox, setShowBox] = useState(false);
+  const isUser = localStorage.getItem("loginUser");
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
@@ -506,10 +507,21 @@ export function ChatActions(props: {
         }}
       />
 
-      <ChatAction text="login" onClick={() => setShowBox(!showBox)} />
+      {isUser === "false" ? (
+        <ChatAction text="login" onClick={() => setShowBox(!showBox)} />
+      ) : (
+        <ChatAction
+          text="link user with social"
+          onClick={() => setShowBox(!showBox)}
+        />
+      )}
       {showBox && <BoxLogin showModal={showBox} setShowModal={setShowBox} />}
 
-      <ChatAction text="logout" onClick={() => LogOut()} />
+      {isUser === "true" ? (
+        <ChatAction text="logout" onClick={() => LogOut()} />
+      ) : (
+        ""
+      )}
 
       {showModelSelector && (
         <Selector

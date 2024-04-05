@@ -41,7 +41,14 @@ export function CheckUser() {
       let { data: dataUserAnonymous, error: errorUser } =
         await supabase.auth.getUser();
       localStorage.setItem("userId", dataUserAnonymous.id);
+      localStorage.setItem("loginUser", "false");
     } else {
+      console.log(dataUser);
+      if (dataUser.user["is_anonymous"]) {
+        localStorage.setItem("loginUser", "false");
+      } else {
+        localStorage.setItem("loginUser", "true");
+      }
       localStorage.setItem("userId", dataUser.id);
     }
   };
@@ -53,5 +60,6 @@ export function CheckUser() {
 
 export const LogOut = async () => {
   await supabase.auth.signOut();
+  localStorage.setItem("loginUser", "false");
   window.location.reload();
 };
