@@ -38,6 +38,7 @@ import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 
 import { BoxLogin } from "./hippo/customui";
+import { LogOut } from "./hippo/handllogin";
 
 import {
   ChatMessage,
@@ -507,6 +508,8 @@ export function ChatActions(props: {
 
       <ChatAction text="login" onClick={() => setShowBox(!showBox)} />
       {showBox && <BoxLogin showModal={showBox} setShowModal={setShowBox} />}
+
+      <ChatAction text="logout" onClick={() => LogOut()} />
 
       {showModelSelector && (
         <Selector

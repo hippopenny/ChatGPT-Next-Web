@@ -50,3 +50,8 @@ export function CheckUser() {
   }, []);
   return <></>;
 }
+
+export const LogOut = async () => {
+  await supabase.auth.signOut();
+  window.location.reload();
+};
