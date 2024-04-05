@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
 import { getPathVidStream } from "../../api/hippo/hippofunc";
 
+/**
+ * stream vid botchat
+ *
+ */
 export function Stream() {
   const [selectPathStream, setSelectPathStream] = useState("");
-  const [typeStream, setTypeStream] = useState(1);
 
+  // set path vid to stream
   const setStreambot = (data) => {
     const randomIndex = Math.floor(Math.random() * data.length);
     setSelectPathStream(data[randomIndex]);
-    setTypeStream(1);
   };
 
+  //
   const handleChanglePathVid = () => {
     const pathVidOnClient = localStorage.getItem("pathVidStream");
     if (pathVidOnClient && pathVidOnClient !== selectPathStream) {
       setSelectPathStream(pathVidOnClient);
     }
   };
+
+  // call path vid from server
   const getData = async () => {
     const result = await getPathVidStream();
     setStreambot(result);
@@ -29,7 +35,7 @@ export function Stream() {
 
   return (
     <>
-      {selectPathStream ? (
+      {selectPathStream ? ( // reload ui when call selectPathStream
         <div className="cam-stream">
           <video
             key={selectPathStream}

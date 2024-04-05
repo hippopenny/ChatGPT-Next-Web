@@ -1,20 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "./supabase";
+
+/**
+ * handle error(link social) -> oauth
+ */
 
 export function HandleLinkToOath() {
   const handleLinkToOath = async () => {
     const currentUrl = window.location.href;
+
+    // url when link social error
     const errorUrl =
       "https://art3.hippopenny.com/?error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user#error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user";
 
     if (currentUrl === errorUrl) {
-      console.log("Trang của bạn đã chuyển hướng đến một URL lỗi.");
+      // oauth
       const socialError = localStorage.getItem("socalLoginNow");
-      if (socialError === "github") {
-        await supabase.auth.signInWithOAuth({ provider: socialError });
-      }
+
+      await supabase.auth.signInWithOAuth({ provider: socialError });
     }
   };
   useEffect(() => {
@@ -25,7 +30,8 @@ export function HandleLinkToOath() {
 
 export function CheckUser() {
   /**
-   * Flow auth
+   * Flow auth  check user ? ""  : authAnonymous
+   * set id user to use rag  : localStore
    */
 
   const handleFlowAuth = async () => {
@@ -35,10 +41,8 @@ export function CheckUser() {
       let { data: dataUserAnonymous, error: errorUser } =
         await supabase.auth.getUser();
       localStorage.setItem("userId", dataUserAnonymous.id);
-      console.log("data users::", dataUserAnonymous);
     } else {
       localStorage.setItem("userId", dataUser.id);
-      console.log("data users::", dataUser);
     }
   };
   useEffect(() => {
