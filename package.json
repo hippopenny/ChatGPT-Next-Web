@@ -18,9 +18,13 @@
   "dependencies": {
     "@auth/core": "^0.28.0",
     "@fortaine/fetch-event-source": "^3.0.6",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@hello-pangea/dnd": "^16.5.0",
     "@next/third-parties": "^14.1.0",
     "@supabase/auth-js": "^2.62.2",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.41.1",
     "@svgr/webpack": "^6.5.1",
     "@vercel/analytics": "^0.1.11",

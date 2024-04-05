@@ -138,21 +138,20 @@
 
 .sidebar-header {
   position: relative;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 40px;
 }
 
 .sidebar-logo {
   position: absolute;
   right: 35%;
-  bottom: 18px;
+  bottom: 10%;
 }
 
 .sidebar-title {
-  font-size: 20px;
+  font-size: 12px;
   font-weight: bold;
   animation: slide-in ease 0.3s;
-  padding-left: 25%;
+  padding-left: 30%;
 }
 
 .sidebar-sub-title {
@@ -241,7 +240,7 @@
     display: none;
   }
   .sidebar-logo {
-    right: 35%;
+    padding-left: 30%;
     position: relative;
     display: flex;
     justify-content: center;
