@@ -75,3 +75,84 @@
     }
   }
 }
+
+.authSocial {
+  margin-top: 20px;
+  background-color: #1877f2;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.inforSocial {
+  margin: 10px 0px;
+}
+.inforSocial p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #333;
+}
+button.chatwithme {
+  padding: 10px 40px;
+  font-size: 16px;
+  background-color: #448ddb;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+button.chatwithme:hover {
+  background-color: #0056b3;
+}
+.loginSocial {
+  display: inline-flex;
+  border-radius: 20px;
+  font-size: 10px;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  padding: 6px 30px;
+  box-shadow: var(--card-shadow);
+  align-items: center;
+  margin-bottom: 8px;
+}
+.boxLogin {
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: var(--full-height);
+  width: 100vw;
+  background-color: rgb(0 0 0 / 64%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .formsocial {
+    background-color: white;
+    padding: 5% 10%;
+    border-radius: 2%;
+    .title {
+      font-size: 30px;
+    }
+    .social {
+      display: flex;
+
+      .iconsocial {
+        font-size: 40px;
+        padding: 10px 25px;
+        .statussocial {
+          font-size: 12px !important;
+        }
+      }
+    }
+  }
+}

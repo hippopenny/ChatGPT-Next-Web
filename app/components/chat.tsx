@@ -36,7 +36,9 @@ import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
-import RobotIcon from "../icons/robot.svg";
+
+import { BoxLogin } from "./hippo/customui";
+import { LogOut } from "./hippo/handllogin";
 
 import {
   ChatMessage,
@@ -171,10 +173,6 @@ function PromptToast(props: {
   showModal?: boolean;
   setShowModal: (_: boolean) => void;
 }) {
-  const chatStore = useChatStore();
-  const session = chatStore.currentSession();
-  const context = session.mask.context;
-
   return (
     <div className={styles["prompt-toast"]} key="prompt-toast">
       {props.showToast && (
@@ -183,14 +181,16 @@ function PromptToast(props: {
           role="button"
           onClick={() => props.setShowModal(true)}
         >
-          <BrainIcon />
           <span className={styles["prompt-toast-content"]}>
-            {Locale.Context.Toast(context.length)}
+            You will be given 200 credits when you login
           </span>
         </div>
       )}
       {props.showModal && (
-        <SessionConfigModel onClose={() => props.setShowModal(false)} />
+        <BoxLogin
+          showModal={props.showModal}
+          setShowModal={props.setShowModal}
+        />
       )}
     </div>
   );
@@ -449,6 +449,8 @@ export function ChatActions(props: {
   );
   const [showModelSelector, setShowModelSelector] = useState(false);
   const [showUploadImage, setShowUploadImage] = useState(false);
+  const [showBox, setShowBox] = useState(false);
+  const isUser = localStorage.getItem("loginUser");
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
@@ -487,21 +489,6 @@ export function ChatActions(props: {
           icon={props.uploading ? <LoadingButtonIcon /> : <ImageIcon />}
         />
       )}
-      <ChatAction
-        onClick={nextTheme}
-        text={Locale.Chat.InputActions.Theme[theme]}
-        icon={
-          <>
-            {theme === Theme.Auto ? (
-              <AutoIcon />
-            ) : theme === Theme.Light ? (
-              <LightIcon />
-            ) : theme === Theme.Dark ? (
-              <DarkIcon />
-            ) : null}
-          </>
-        }
-      />
 
       <ChatAction
         onClick={() => {
@@ -510,6 +497,8 @@ export function ChatActions(props: {
         text={Locale.Chat.InputActions.Masks}
       />
 
+      {}
+
       <ChatAction
         text={Locale.Chat.InputActions.Clear}
         onClick={() => {
@@ -517,6 +506,22 @@ export function ChatActions(props: {
           navigate(Path.Chat);
         }}
       />
+
+      {isUser === "false" ? (
+        <ChatAction text="login" onClick={() => setShowBox(!showBox)} />
+      ) : (
+        <ChatAction
+          text="link user with social"
+          onClick={() => setShowBox(!showBox)}
+        />
+      )}
+      {showBox && <BoxLogin showModal={showBox} setShowModal={setShowBox} />}
+
+      {isUser === "true" ? (
+        <ChatAction text="logout" onClick={() => LogOut()} />
+      ) : (
+        ""
+      )}
 
       {showModelSelector && (
         <Selector
@@ -1167,7 +1172,6 @@ function _Chat() {
             </div>
           </div>
         )}
-
         <div className={`window-header-title ${styles["chat-body-title"]}`}>
           <div
             className={`window-header-main-title ${styles["chat-body-main-title"]}`}
@@ -1175,12 +1179,15 @@ function _Chat() {
           >
             {!session.topic ? DEFAULT_TOPIC : session.topic}
           </div>
+
           <div className="window-header-sub-title">
             {Locale.Chat.SubTitle(session.messages.length)}
           </div>
+          <div className="window-header-sub-title">Credit: 0</div>
         </div>
+
         <div className="window-actions">
-          {!isMobileScreen && (
+          {/* {!isMobileScreen && (
             <div className="window-action-button">
               <IconButton
                 icon={<RenameIcon />}
@@ -1188,9 +1195,9 @@ function _Chat() {
                 onClick={() => setIsEditingMessage(true)}
               />
             </div>
-          )}
+          )} */}
 
-          {showMaxIcon && (
+          {/* {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
                 icon={config.tightBorder ? <MinIcon /> : <MaxIcon />}
@@ -1202,9 +1209,8 @@ function _Chat() {
                 }}
               />
             </div>
-          )}
+          )} */}
         </div>
-
         <PromptToast
           showToast={!hitBottom}
           showModal={showPromptModal}

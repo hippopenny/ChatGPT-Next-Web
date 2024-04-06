@@ -194,19 +194,6 @@ export function Home() {
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
-    const userId = localStorage.getItem("userId");
-
-    // add status rag
-    localStorage.setItem("statusRag", "1"); // deafult use rag
-
-    // add UserId to localStore
-    if (userId) {
-      console.log("userId:", userId);
-    } else {
-      const userId = generateRandomToken(20);
-      console.log("userId", userId);
-      localStorage.setItem("userId", `collection_${userId}`);
-    }
   }, []);
 
   if (!useHasHydrated()) {
