@@ -8,6 +8,15 @@ console.log("[Next] build with chunk: ", !disableChunk);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    TOKENHIPPO: process.env.TOKENHIPPO,
+    STREAMBOT: process.env.STREAMBOT,
+    SAVETOVECTORDATABASE: process.env.SAVETOVECTORDATABASE,
+    SEARCHFROMVECTORDATABASE: process.env.SEARCHFROMVECTORDATABASE,
+    STREAMBOT_BOT: process.env.STREAMBOT_BOT,
+    SAVETOVECTORDATABASE_BOT: process.env.SAVETOVECTORDATABASE_BOT,
+    SEARCHFROMVECTORDATABASE_BOT: process.env.SEARCHFROMVECTORDATABASE_BOT,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

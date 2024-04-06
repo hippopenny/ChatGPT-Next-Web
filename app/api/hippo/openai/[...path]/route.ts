@@ -3,8 +3,9 @@ import { getServerSideConfig } from "@/app/config/server";
 import { ModelProvider, OpenaiPath } from "@/app/constant";
 import { prettyObject } from "@/app/utils/format";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "../../auth";
-import { requestOpenai } from "../../common";
+import { auth } from "../../../auth";
+import { requestOpenai } from "../../../common";
+import { genRagMsg } from "../../.common/rag";
 
 const ALLOWD_PATH = new Set(Object.values(OpenaiPath));
 
@@ -20,6 +21,31 @@ function getModels(remoteModelRes: OpenAIListModelResponse) {
   return remoteModelRes;
 }
 
+/**
+ *  Build rag in req.msg and change req.pathname to call apiOpenAi
+ * @returns {NextRequest} new req.
+ */
+async function updateRequest(req: NextRequest) {
+  let reqBody = await req.json();
+  let messages = reqBody["messages"];
+  let lastMessage = messages[messages.length - 1];
+  lastMessage.content = await genRagMsg(lastMessage, reqBody["userId"]);
+  console.log("lastMessage.content::", lastMessage.content);
+  delete reqBody["userId"];
+
+  let newReq = new NextRequest(req.nextUrl, {
+    method: req.method,
+    headers: req.headers,
+    body: JSON.stringify(reqBody),
+  });
+  newReq.nextUrl.pathname = newReq.nextUrl.pathname.replace("/hippo", "");
+
+  return newReq;
+}
+
+/**
+ * API (handle req from user).
+ */
 async function handle(
   req: NextRequest,
   { params }: { params: { path: string[] } },
@@ -53,7 +79,8 @@ async function handle(
   }
 
   try {
-    const response = await requestOpenai(req);
+    const newReq = await updateRequest(req);
+    const response = await requestOpenai(newReq);
 
     // list models
     if (subpath === OpenaiPath.ListModelPath && response.status === 200) {

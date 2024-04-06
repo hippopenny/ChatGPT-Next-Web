@@ -93,9 +93,10 @@ export class ChatGPTApi implements LLMApi {
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
       ...useChatStore.getState().currentSession().mask.modelConfig,
-      ...{
-        model: options.config.model,
-      },
+      // config.model will override the AI ​​model of mask.modelConfig
+      // ...{
+      //   model: options.config.model,
+      // },
     };
 
     const requestPayload = {
@@ -123,6 +124,7 @@ export class ChatGPTApi implements LLMApi {
     console.log("[Request] openai payload: ", requestPayload);
 
     const shouldStream = !!options.config.stream;
+
     const controller = new AbortController();
     options.onController?.(controller);
 
