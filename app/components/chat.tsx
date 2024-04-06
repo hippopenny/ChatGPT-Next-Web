@@ -360,7 +360,7 @@ export function ChatAction(props: {
 
   return (
     <div
-      className={`${styles["chat-input-action"]} clickable`}
+      className={`${styles["chat-input-action"]} clickable ${props.style}`}
       onClick={() => {
         props.onClick();
         setTimeout(updateWidth, 1);
@@ -508,17 +508,18 @@ export function ChatActions(props: {
       />
 
       {isUser === "false" ? (
-        <ChatAction text="login" onClick={() => setShowBox(!showBox)} />
-      ) : (
         <ChatAction
-          text="link user with social"
+          text="login"
+          style="borderBlue"
           onClick={() => setShowBox(!showBox)}
         />
+      ) : (
+        <></>
       )}
       {showBox && <BoxLogin showModal={showBox} setShowModal={setShowBox} />}
 
       {isUser === "true" ? (
-        <ChatAction text="logout" onClick={() => LogOut()} />
+        <ChatAction text="logout" style="borderBlue" onClick={() => LogOut()} />
       ) : (
         ""
       )}
