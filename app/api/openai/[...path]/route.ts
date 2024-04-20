@@ -5,6 +5,7 @@ import { prettyObject } from "@/app/utils/format";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../auth";
 import { requestOpenai } from "../../common";
+import { updateRequest } from "../../hippo/openai/[...path]/route";
 
 const ALLOWD_PATH = new Set(Object.values(OpenaiPath));
 
@@ -53,7 +54,8 @@ async function handle(
   }
 
   try {
-    const response = await requestOpenai(req);
+    const newReq = await updateRequest(req);
+    const response = await requestOpenai(newReq);
 
     // list models
     if (subpath === OpenaiPath.ListModelPath && response.status === 200) {

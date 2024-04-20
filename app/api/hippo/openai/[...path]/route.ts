@@ -25,13 +25,18 @@ function getModels(remoteModelRes: OpenAIListModelResponse) {
  *  Build rag in req.msg and change req.pathname to call apiOpenAi
  * @returns {NextRequest} new req.
  */
-async function updateRequest(req: NextRequest) {
+export async function updateRequest(req: NextRequest) {
   let reqBody = await req.json();
   let messages = reqBody["messages"];
   let lastMessage = messages[messages.length - 1];
-  lastMessage.content = await genRagMsg(lastMessage, reqBody["userId"]);
+  lastMessage.content = await genRagMsg(
+    lastMessage,
+    reqBody["userId"],
+    reqBody["topic"],
+  );
   console.log("lastMessage.content::", lastMessage.content);
   delete reqBody["userId"];
+  delete reqBody["topic"];
 
   let newReq = new NextRequest(req.nextUrl, {
     method: req.method,

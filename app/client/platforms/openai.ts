@@ -90,6 +90,8 @@ export class ChatGPTApi implements LLMApi {
       content: visionModel ? v.content : getMessageTextContent(v),
     }));
 
+    const topic = useChatStore.getState().currentSession().topic;
+
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
       ...useChatStore.getState().currentSession().mask.modelConfig,
@@ -107,6 +109,7 @@ export class ChatGPTApi implements LLMApi {
       presence_penalty: modelConfig.presence_penalty,
       frequency_penalty: modelConfig.frequency_penalty,
       top_p: modelConfig.top_p,
+      topic: topic,
       // max_tokens: Math.max(modelConfig.max_tokens, 1024),
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
     };
