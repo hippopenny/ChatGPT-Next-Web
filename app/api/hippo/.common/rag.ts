@@ -1,4 +1,17 @@
-export async function genRagMsg(lastMessage: any, userId: any) {
+const prompts: { [key: string]: string } = {
+  "Chat with me": `
+      1. Refrain from explicitly mentioning the context provided in your response.
+      2. The context should silently guide your answers without being directly acknowledged.
+      3. Do not use phrases such as 'According to the context provided', 'Based on the context, ...' etc.
+  `,
+  "Draw with me": `
+      1. Refrain from explicitly mentioning the context provided in your response.
+      2. The context should silently guide your answers without being directly acknowledged.
+      3. Do not use phrases such as 'According to the context provided', 'Based on the context, ...' etc.
+  `,
+};
+
+export async function genRagMsg(lastMessage: any, userId: any, topic: string) {
   try {
     if (lastMessage.role === "user") {
       const data = {
@@ -45,9 +58,7 @@ export async function genRagMsg(lastMessage: any, userId: any) {
       // form rag
       return `
       You are a Q&A expert system. Your responses must always be rooted in the context provided for each query. Here are some guidelines to follow:
-      1. Refrain from explicitly mentioning the context provided in your response.
-      2. The context should silently guide your answers without being directly acknowledged.
-      3. Do not use phrases such as 'According to the context provided', 'Based on the context, ...' etc.
+      ${prompts[topic]}
       Context information:
       ----------------------
       ${context}

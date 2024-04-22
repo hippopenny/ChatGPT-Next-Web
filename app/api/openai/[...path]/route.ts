@@ -20,6 +20,20 @@ function getModels(remoteModelRes: OpenAIListModelResponse) {
   return remoteModelRes;
 }
 
+async function updateRequest(req: NextRequest) {
+  let reqBody = await req.json();
+  delete reqBody["userId"];
+  delete reqBody["topic"];
+
+  let newReq = new NextRequest(req.nextUrl, {
+    method: req.method,
+    headers: req.headers,
+    body: JSON.stringify(reqBody),
+  });
+
+  return newReq;
+}
+
 async function handle(
   req: NextRequest,
   { params }: { params: { path: string[] } },
@@ -53,7 +67,8 @@ async function handle(
   }
 
   try {
-    const response = await requestOpenai(req);
+    const newReq = await updateRequest(req);
+    const response = await requestOpenai(newReq);
 
     // list models
     if (subpath === OpenaiPath.ListModelPath && response.status === 200) {
