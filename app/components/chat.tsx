@@ -665,6 +665,7 @@ function _Chat() {
   );
 
   const userId = localStorage.getItem("userId") || "";
+  const loginUser = localStorage.getItem("loginUser") || "false";
 
   // auto grow input
   const [inputRows, setInputRows] = useState(2);
@@ -1231,11 +1232,13 @@ function _Chat() {
             </div>
           )} */}
         </div>
-        <PromptToast
-          showToast={!hitBottom}
-          showModal={showPromptModal}
-          setShowModal={setShowPromptModal}
-        />
+        {loginUser === "false" && (
+          <PromptToast
+            showToast={!hitBottom}
+            showModal={showPromptModal}
+            setShowModal={setShowPromptModal}
+          />
+        )}
       </div>
       <div className="stream-chat">
         <Stream />
