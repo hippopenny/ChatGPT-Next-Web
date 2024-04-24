@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDebouncedCallback } from "use-debounce";
 import React, {
   useState,
@@ -99,6 +100,7 @@ import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
+import { useCreditStore } from "../store/credit";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -622,6 +624,7 @@ function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
+  const creditStore = useCreditStore();
   const session = chatStore.currentSession();
   const config = useAppConfig();
   const fontSize = config.fontSize;
@@ -660,6 +663,8 @@ function _Chat() {
     100,
     { leading: true, trailing: true },
   );
+
+  const userId = localStorage.getItem("userId") || "";
 
   // auto grow input
   const [inputRows, setInputRows] = useState(2);
@@ -724,6 +729,11 @@ function _Chat() {
       matchCommand.invoke();
       return;
     }
+    if (creditStore.credit == 0) {
+      return;
+    }
+    console.log("userId", userId);
+    creditStore.upsertCredit(userId, creditStore.credit - 1);
     setIsLoading(true);
     chatStore
       .onUserInput(userInput, attachImages)
@@ -757,6 +767,11 @@ function _Chat() {
   const onUserStop = (messageId: string) => {
     ChatControllerPool.stop(session.id, messageId);
   };
+
+  useEffect(() => {
+    const channel = creditStore.subcribe(userId);
+    return () => creditStore.unsubcribe(channel);
+  }, [userId]);
 
   useEffect(() => {
     chatStore.updateCurrentSession((session) => {
@@ -1186,7 +1201,9 @@ function _Chat() {
           <div className="window-header-sub-title">
             {Locale.Chat.SubTitle(session.messages.length)}
           </div>
-          <div className="window-header-sub-title">Credit: 0</div>
+          <div className="window-header-sub-title">
+            Credit: {creditStore.credit}
+          </div>
         </div>
 
         <div className="window-actions">
