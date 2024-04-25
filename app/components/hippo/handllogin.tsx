@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useCreditStore } from "@/app/store/credit";
@@ -11,12 +10,9 @@ import { useCreditStore } from "@/app/store/credit";
 export function HandleLinkToOath() {
   const handleLinkToOath = async () => {
     const currentUrl = window.location.href;
-
+    // Get a specific URL parameter directly
     // url when link social error
-    const errorUrl =
-      "https://art3.hippopenny.com/?error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user#error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user";
-
-    if (currentUrl === errorUrl) {
+    if (currentUrl.includes("error")) {
       // oauth
       const socialError = localStorage.getItem("socalLoginNow");
 
