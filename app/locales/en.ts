@@ -63,7 +63,7 @@ const en: LocaleType = {
       },
       Prompt: "Prompts",
       Masks: "Have Some Funs",
-      Clear: "Clean chat",
+      Clear: "Clean Chat",
       Settings: "Settings",
       UploadImage: "Upload Images",
     },
