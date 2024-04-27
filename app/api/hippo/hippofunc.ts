@@ -54,7 +54,11 @@ export async function searchVidHippo(text: string) {
   const res = await axios.post("/api/hippo/search/pathVid", {
     text: text,
   });
-  const dataPathResult = res.data.collection[0].metadata.url;
-  localStorage.setItem("pathVidStream", dataPathResult);
+  const status = res.status;
+  if (status === 200) {
+    console.log("res", res);
+    const dataPathResult = res.data.collection[0]?.metadata.url;
+    if (dataPathResult) localStorage.setItem("pathVidStream", dataPathResult);
+  }
   return res.data;
 }

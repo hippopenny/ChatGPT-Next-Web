@@ -1,7 +1,7 @@
 "use client";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
+import { useCreditStore } from "@/app/store/credit";
 
 /**
  * handle error(link social) -> oauth
@@ -10,12 +10,9 @@ import { supabase } from "./supabase";
 export function HandleLinkToOath() {
   const handleLinkToOath = async () => {
     const currentUrl = window.location.href;
-
+    // Get a specific URL parameter directly
     // url when link social error
-    const errorUrl =
-      "https://art3.hippopenny.com/?error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user#error=server_error&error_code=422&error_description=Identity+is+already+linked+to+another+user";
-
-    if (currentUrl === errorUrl) {
+    if (currentUrl.includes("error")) {
       // oauth
       const socialError = localStorage.getItem("socalLoginNow");
 
@@ -34,32 +31,46 @@ export function CheckUser() {
    * set id user to use rag  : localStore
    */
 
+  const [userId, setUserId] = useState<string>("");
+  const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
+  const creditStore = useCreditStore();
+
   const handleFlowAuth = async () => {
     let { data: dataUser, error: errorUser } = await supabase.auth.getUser();
+    console.log("dataUser", dataUser);
     if (dataUser.user === null) {
       await supabase.auth.signInAnonymously();
       let { data: dataUserAnonymous, error: errorUser } =
         await supabase.auth.getUser();
-      localStorage.setItem("userId", dataUserAnonymous.id);
+      localStorage.setItem("userId", dataUserAnonymous?.user?.id);
       localStorage.setItem("loginUser", "false");
+      setUserId(dataUserAnonymous?.user?.id);
+      setIsAnonymous(true);
     } else {
-      console.log(dataUser);
-      if (dataUser.user["is_anonymous"]) {
-        localStorage.setItem("loginUser", "false");
-      } else {
-        localStorage.setItem("loginUser", "true");
-      }
-      localStorage.setItem("userId", dataUser.id);
+      localStorage.setItem(
+        "loginUser",
+        dataUser.user.is_anonymous ? "false" : "true",
+      );
+      localStorage.setItem("userId", dataUser.user.id);
+      setUserId(dataUser.user.id);
+      setIsAnonymous(dataUser.user.is_anonymous);
     }
   };
   useEffect(() => {
     handleFlowAuth();
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      creditStore.fetchCredit(userId, isAnonymous);
+    }
+  }, [userId]);
+
   return <></>;
 }
 
 export const LogOut = async () => {
   await supabase.auth.signOut();
-  localStorage.setItem("loginUser", "false");
+  localStorage.clear();
   window.location.reload();
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDebouncedCallback } from "use-debounce";
 import React, {
   useState,
@@ -99,6 +100,7 @@ import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
+import { useCreditStore } from "../store/credit";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -622,6 +624,7 @@ function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
+  const creditStore = useCreditStore();
   const session = chatStore.currentSession();
   const config = useAppConfig();
   const fontSize = config.fontSize;
@@ -660,6 +663,9 @@ function _Chat() {
     100,
     { leading: true, trailing: true },
   );
+
+  const userId = localStorage.getItem("userId") || "";
+  const loginUser = localStorage.getItem("loginUser") || "false";
 
   // auto grow input
   const [inputRows, setInputRows] = useState(2);
@@ -724,6 +730,11 @@ function _Chat() {
       matchCommand.invoke();
       return;
     }
+    if (creditStore.credit == 0) {
+      return;
+    }
+    console.log("userId", userId);
+    creditStore.upsertCredit(userId, creditStore.credit - 1);
     setIsLoading(true);
     chatStore
       .onUserInput(userInput, attachImages)
@@ -757,6 +768,11 @@ function _Chat() {
   const onUserStop = (messageId: string) => {
     ChatControllerPool.stop(session.id, messageId);
   };
+
+  useEffect(() => {
+    const channel = creditStore.subcribe(userId);
+    return () => creditStore.unsubcribe(channel);
+  }, [userId]);
 
   useEffect(() => {
     chatStore.updateCurrentSession((session) => {
@@ -1178,7 +1194,7 @@ function _Chat() {
         <div className={`window-header-title ${styles["chat-body-title"]}`}>
           <div
             className={`window-header-main-title ${styles["chat-body-main-title"]}`}
-            onClickCapture={() => setIsEditingMessage(true)}
+            // onClickCapture={() => setIsEditingMessage(true)}
           >
             {!session.topic ? DEFAULT_TOPIC : session.topic}
           </div>
@@ -1186,7 +1202,9 @@ function _Chat() {
           <div className="window-header-sub-title">
             {Locale.Chat.SubTitle(session.messages.length)}
           </div>
-          <div className="window-header-sub-title">Credit: 0</div>
+          <div className="window-header-sub-title">
+            Credit: {creditStore.credit}
+          </div>
         </div>
 
         <div className="window-actions">
@@ -1214,11 +1232,13 @@ function _Chat() {
             </div>
           )} */}
         </div>
-        <PromptToast
-          showToast={!hitBottom}
-          showModal={showPromptModal}
-          setShowModal={setShowPromptModal}
-        />
+        {loginUser === "false" && (
+          <PromptToast
+            showToast={!hitBottom}
+            showModal={showPromptModal}
+            setShowModal={setShowPromptModal}
+          />
+        )}
       </div>
       <div className="stream-chat">
         <Stream />
@@ -1237,10 +1257,11 @@ function _Chat() {
         {messages.map((message, i) => {
           const isUser = message.role === "user";
           const isContext = i < context.length;
-          const showActions =
-            i > 0 &&
-            !(message.preview || message.content.length === 0) &&
-            !isContext;
+          // const showActions =
+          //   i > 0 &&
+          //   !(message.preview || message.content.length === 0) &&
+          //   !isContext;
+          const showActions = false;
           const showTyping = message.preview || message.streaming;
 
           const shouldShowClearContextDivider = i === clearContextIndex - 1;
@@ -1255,7 +1276,7 @@ function _Chat() {
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
                     <div className={styles["chat-message-avatar"]}>
-                      <div className={styles["chat-message-edit"]}>
+                      {/* <div className={styles["chat-message-edit"]}>
                         <IconButton
                           icon={<EditIcon />}
                           onClick={async () => {
@@ -1288,7 +1309,7 @@ function _Chat() {
                             });
                           }}
                         ></IconButton>
-                      </div>
+                      </div> */}
                       {isUser ? (
                         <Avatar avatar={config.avatar} />
                       ) : (
