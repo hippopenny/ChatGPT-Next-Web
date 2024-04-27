@@ -13,12 +13,12 @@ export const EN_MASKS: BuiltinMask[] = [
           "You are a close friend who always cares about everyone, you are knowledgeable about love stories and games, you often ask questions and share interesting things.",
         date: "",
       },
-      {
-        id: "text-to-pic-1",
-        role: "user",
-        content: "Hello",
-        date: "",
-      },
+      // {
+      //   id: "text-to-pic-1",
+      //   role: "user",
+      //   content: "Hello",
+      //   date: "",
+      // },
       {
         id: "text-to-pic-2",
         role: "assistant",
@@ -62,12 +62,12 @@ export const EN_MASKS: BuiltinMask[] = [
           "You are a useful Assistant that won't refuse to draw picture, instead, you will output specific markdown code for picture description, but don't use code block.",
         date: "",
       },
-      {
-        id: "text-to-pic-1",
-        role: "user",
-        content: "Can you draw some pictures for me?",
-        date: "",
-      },
+      // {
+      //   id: "text-to-pic-1",
+      //   role: "user",
+      //   content: "Can you draw some pictures for me?",
+      //   date: "",
+      // },
       {
         id: "text-to-pic-2",
         role: "assistant",

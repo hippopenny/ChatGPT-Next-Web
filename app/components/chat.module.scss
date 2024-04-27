@@ -112,7 +112,7 @@
     background-color: var(--white);
     color: var(--black);
 
-    border: var(--border-in-light);
+    border: 1px solid rgb(29, 147, 171) !important;
     box-shadow: var(--card-shadow);
     padding: 10px 20px;
     border-radius: 100px;
@@ -120,6 +120,35 @@
     animation: slide-in-from-top ease 0.3s;
 
     .prompt-toast-content {
+      margin-left: 10px;
+    }
+  }
+}
+
+.lastest-toast {
+  position: absolute;
+  bottom: -500px;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 40px);
+
+  .lastest-toast-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    background-color: var(--white);
+    color: var(--black);
+
+    border: 1px solid rgb(29, 147, 171) !important;
+    box-shadow: var(--card-shadow);
+    padding: 8px 8é px;
+    border-radius: 100%;
+
+    animation: slide-in-from-top ease 0.3s;
+
+    .lastest-toast-content {
       margin-left: 10px;
     }
   }
