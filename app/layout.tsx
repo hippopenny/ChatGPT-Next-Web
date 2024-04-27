@@ -7,10 +7,33 @@ import { type Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getServerSideConfig } from "./config/server";
 import { GoogleTagManager } from "@next/third-parties/google";
+import BotIcon from "../icons/bot.svg";
+
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
-  title: "NextChat",
+  title: "HippoPenny Chatbot",
+  icons: [
+    {
+      url: "./favicon-16x16.png",
+      sizes: "16x16",
+      type: "image/png",
+      rel: "icon",
+      fetchPriority: "high",
+    },
+    {
+      url: "./favicon-32x32.png",
+      sizes: "32x32",
+      type: "image/png",
+      rel: "icon",
+      fetchPriority: "high",
+    },
+    {
+      url: "./favicon.ico",
+      rel: "icon",
+      fetchPriority: "high",
+    },
+  ],
   description: "Your personal ChatGPT Chat Bot.",
   viewport: {
     width: "device-width",
