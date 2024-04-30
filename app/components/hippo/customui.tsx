@@ -73,7 +73,7 @@ export async function BoxLogin(props: {
                   theme="light"
                   showLinks={false}
                   providers={["google", "github", "facebook"]}
-                  // redirectTo="http://localhost:3000/auth/callback"
+                  redirectTo={process.env.SUPABASE_REDIRECT}
                 />
               </div>
             </div>
