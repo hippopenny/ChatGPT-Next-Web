@@ -569,9 +569,9 @@ export function MaskPage() {
                   <IconButton
                     icon={<AddIcon />}
                     text={Locale.Mask.Item.Chat}
-                    onClick={() => {
+                    onClick={async () => {
                       console.log(m, "data mask");
-                      chatStore.newSession(m);
+                      await chatStore.getSession(m);
                       navigate(Path.Chat);
                     }}
                   />

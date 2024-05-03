@@ -101,6 +101,7 @@ import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
 import { useCreditStore } from "../store/credit";
+import { start } from "repl";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -455,6 +456,7 @@ export function ChatActions(props: {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const maskStore = useMaskStore();
+  const session = chatStore.currentSession();
 
   //
   const allMasks = maskStore.getAll();
@@ -524,13 +526,13 @@ export function ChatActions(props: {
 
       {}
 
-      <ChatAction
+      {/* <ChatAction
         text={Locale.Chat.InputActions.Clear}
-        onClick={() => {
-          chatStore.newSession(allMasks[0]);
+        onClick={async () => {
+          await chatStore.newSession(session.mask);
           navigate(Path.Chat);
         }}
-      />
+      /> */}
 
       {isUser === "false" ? (
         <ChatAction
@@ -648,6 +650,8 @@ export function DeleteImageButton(props: { deleteImage: () => void }) {
 function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
+  const maskStore = useMaskStore();
+  const allMasks = maskStore.getAll();
   const chatStore = useChatStore();
   const creditStore = useCreditStore();
   const session = chatStore.currentSession();
@@ -655,6 +659,7 @@ function _Chat() {
   const fontSize = config.fontSize;
 
   const [showExport, setShowExport] = useState(false);
+  const [topic, setTopic] = useState(session.topic);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
@@ -712,10 +717,19 @@ function _Chat() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(measure, [userInput]);
+  useEffect(() => {
+    if (topic !== session.topic) {
+      setTopic(session.topic);
+    }
+  }, [session]);
+  useEffect(() => {
+    chatStore.getSession(session.mask);
+    console.log("topic", topic);
+  }, [topic]);
 
   // chat commands shortcuts
   const chatCommands = useChatCommand({
-    new: () => chatStore.newSession(),
+    new: () => chatStore.getSession(),
     newm: () => navigate(Path.NewChat),
     prev: () => chatStore.nextSession(-1),
     next: () => chatStore.nextSession(1),
@@ -759,15 +773,19 @@ function _Chat() {
       return;
     }
     console.log("userId", userId);
-    creditStore.upsertCredit(userId, creditStore.credit - 1);
+    // so we can do it in backend
+    // creditStore.upsertCredit(userId, creditStore.credit - 1);
+
     setIsLoading(true);
     chatStore
       .onUserInput(userInput, attachImages)
       .then(() => setIsLoading(false));
+
     setAttachImages([]);
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
+
     if (!isMobileScreen) inputRef.current?.focus();
     setAutoScroll(true);
   };
@@ -941,17 +959,22 @@ function _Chat() {
   }, [session.mask.context, session.mask.hideContext]);
   const accessStore = useAccessStore();
 
-  if (
-    context.length === 0 &&
-    session.messages.at(0)?.content !== BOT_HELLO.content
-  ) {
-    navigate(Path.Masks);
-    // const copiedHello = Object.assign({}, BOT_HELLO);
-    // if (!accessStore.isAuthorized()) {
-    //   copiedHello.content = Locale.Error.Unauthorized;
-    // }
-    // context.push(copiedHello);
-  }
+  useEffect(() => {
+    const startChat = async () => {
+      if (
+        context.length === 0 &&
+        session.messages.at(0)?.content !== BOT_HELLO.content
+      ) {
+        await chatStore.getSession(allMasks[0]);
+        // const copiedHello = Object.assign({}, BOT_HELLO);
+        // if (!accessStore.isAuthorized()) {
+        //   copiedHello.content = Locale.Error.Unauthorized;
+        // }
+        // context.push(copiedHello);
+      }
+    };
+    startChat();
+  }, []);
 
   // preview messages
   const renderMessages = useMemo(() => {
