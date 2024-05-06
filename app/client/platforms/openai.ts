@@ -131,13 +131,15 @@ export class ChatGPTApi implements LLMApi {
     const controller = new AbortController();
     options.onController?.(controller);
 
+    const headers = await getHeaders();
+
     try {
       const chatPath = this.path(OpenaiPath.ChatPath);
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
-        headers: getHeaders(),
+        headers: headers,
       };
 
       // make a fetch request
@@ -301,12 +303,12 @@ export class ChatGPTApi implements LLMApi {
         ),
         {
           method: "GET",
-          headers: getHeaders(),
+          headers: await getHeaders(),
         },
       ),
       fetch(this.path(OpenaiPath.SubsPath), {
         method: "GET",
-        headers: getHeaders(),
+        headers: await getHeaders(),
       }),
     ]);
 
@@ -353,10 +355,12 @@ export class ChatGPTApi implements LLMApi {
       return DEFAULT_MODELS.slice();
     }
 
+    const headers = await getHeaders();
+
     const res = await fetch(this.path(OpenaiPath.ListModelPath), {
       method: "GET",
       headers: {
-        ...getHeaders(),
+        ...headers,
       },
     });
 

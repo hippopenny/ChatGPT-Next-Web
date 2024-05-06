@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX, ModelProvider } from "../constant";
+import { supabase } from ".././components/hippo/supabase";
+import { getUserCredits } from "./user";
 
 function getIP(req: NextRequest) {
   let ip = req.ip ?? req.headers.get("x-real-ip");
@@ -20,15 +22,33 @@ function parseApiKey(bearToken: string) {
 
   return {
     accessCode: isApiKey ? "" : token.slice(ACCESS_CODE_PREFIX.length),
-    apiKey: isApiKey ? token : "",
+    apiKey: null,
   };
 }
 
-export function auth(req: NextRequest, modelProvider: ModelProvider) {
+export async function auth(req: NextRequest, modelProvider: ModelProvider) {
   const authToken = req.headers.get("Authorization") ?? "";
 
   // check if it is openai api key or user token
   const { accessCode, apiKey } = parseApiKey(authToken);
+
+  if (!accessCode && !apiKey) {
+    return {
+      error: true,
+      msg: "empty access code and api key",
+    };
+  }
+
+  let credit = await getUserCredits(accessCode);
+
+  console.log("[Credit]", credit);
+
+  if (!credit) {
+    return {
+      error: true,
+      msg: "out of credit",
+    };
+  }
 
   const hashedCode = md5.hash(accessCode ?? "").trim();
 
@@ -39,12 +59,12 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
 
-  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !apiKey) {
-    return {
-      error: true,
-      msg: !accessCode ? "empty access code" : "wrong access code",
-    };
-  }
+  // if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !apiKey) {
+  //   return {
+  //     error: true,
+  //     msg: !accessCode ? "empty access code" : "wrong access code",
+  //   };
+  // }
 
   if (serverConfig.hideUserApiKey && !!apiKey) {
     return {
@@ -55,6 +75,7 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
 
   // if user does not provide an api key, inject system api key
   if (!apiKey) {
+    console.log("[Auth] inject system api key");
     const serverConfig = getServerSideConfig();
 
     const systemApiKey =

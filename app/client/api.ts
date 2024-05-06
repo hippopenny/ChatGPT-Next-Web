@@ -13,6 +13,7 @@ export type MessageRole = (typeof ROLES)[number];
 
 export const Models = ["gpt-3.5-turbo", "gpt-4"] as const;
 export type ChatModel = ModelType;
+import { supabase } from ".././components/hippo/supabase";
 
 export interface MultimodalContent {
   type: "text" | "image_url";
@@ -147,7 +148,9 @@ export class ClientApi {
   }
 }
 
-export function getHeaders() {
+export async function getHeaders() {
+  const accessToken =
+    (await supabase.auth.getSession()).data.session?.access_token ?? "";
   const accessStore = useAccessStore.getState();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -171,13 +174,8 @@ export function getHeaders() {
     // use user's api key first
     if (validString(apiKey)) {
       headers[authHeader] = makeBearer(apiKey);
-    } else if (
-      accessStore.enabledAccessControl() &&
-      validString(accessStore.accessCode)
-    ) {
-      headers[authHeader] = makeBearer(
-        ACCESS_CODE_PREFIX + accessStore.accessCode,
-      );
+    } else if (validString(accessToken)) {
+      headers[authHeader] = makeBearer(ACCESS_CODE_PREFIX + accessToken);
     }
   }
 
