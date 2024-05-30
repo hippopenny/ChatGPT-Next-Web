@@ -21,6 +21,7 @@ import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 import { createPersistStore } from "../utils/store";
 import { saveConentHippo, searchVidHippo } from "../api/hippo/hippofunc";
+import { supabase } from "../components/hippo/supabase";
 
 export type ChatMessage = RequestMessage & {
   date: string;
@@ -195,7 +196,88 @@ export const useChatStore = createPersistStore(
         });
       },
 
-      newSession(mask?: Mask) {
+      async saveMessageToLS(session: ChatSession, msg: any, modelConfig: any) {
+        const userContent = fillTemplateWith(msg.message, modelConfig);
+
+        const messageUpdate: ChatMessage = createMessage({
+          role: msg.role,
+          content: userContent,
+          date: new Date(msg.created_at).toLocaleString(),
+        });
+
+        get().updateCurrentSession((session) => {
+          const savedMessage = {
+            ...messageUpdate,
+            content: userContent,
+          };
+          session.messages = session.messages.concat([savedMessage]);
+        });
+      },
+
+      async newSession(mask?: Mask) {
+        const userId = localStorage.getItem("userId");
+        console.log("mask", mask);
+
+        for (const msg of mask?.context ?? []) {
+          const { data, error } = await supabase
+            .from("messages")
+            .insert([
+              {
+                user_id: userId,
+                message: msg.content,
+                topic: mask?.name,
+                role: msg?.role,
+              },
+            ])
+            .select();
+          if (error) {
+            console.error("[Chat] failed to insert messages", error);
+          } else {
+            console.log("[Chat] inserted messages", data);
+          }
+        }
+
+        const session = createEmptySession();
+
+        if (mask) {
+          const config = useAppConfig.getState();
+          const globalModelConfig = config.modelConfig;
+
+          session.mask = {
+            ...mask,
+            modelConfig: {
+              ...globalModelConfig,
+              ...mask.modelConfig,
+            },
+          };
+          console.log(session);
+          session.topic = mask.name;
+        }
+
+        set((state) => ({
+          currentSessionIndex: 0,
+          sessions: [session].concat(state.sessions),
+        }));
+      },
+
+      async getSession(mask?: Mask) {
+        const userId = localStorage.getItem("userId");
+
+        // get all message from user id and topic
+        let { data: messages, error } = await supabase
+          .from("messages")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("topic", mask?.name)
+          .order("created_at", { ascending: true });
+
+        console.log("messages", messages);
+
+        if (error) {
+          await get().newSession(mask);
+          return;
+        }
+
         const session = createEmptySession();
 
         if (mask) {
@@ -216,6 +298,13 @@ export const useChatStore = createPersistStore(
           currentSessionIndex: 0,
           sessions: [session].concat(state.sessions),
         }));
+
+        const modelConfig = session.mask.modelConfig;
+
+        // The conversation is start with same message in default mask, so we should skip them
+        for (let i = session.mask.context.length; i < messages?.length; i++) {
+          await get().saveMessageToLS(session, messages?.at(i), modelConfig);
+        }
       },
 
       nextSession(delta: number) {
@@ -282,7 +371,29 @@ export const useChatStore = createPersistStore(
         return session;
       },
 
-      onNewMessage(message: ChatMessage) {
+      async onNewMessage(message: ChatMessage) {
+        const userId = localStorage.getItem("userId");
+        const topic = get().currentSession().topic;
+
+        // Save new message of bot to supabase
+        const { data, error } = await supabase
+          .from("messages")
+          .insert([
+            {
+              user_id: userId,
+              message: message.content,
+              topic: topic,
+              role: message?.role,
+            },
+          ])
+          .select();
+
+        if (error) {
+          console.error("[Chat] failed to insert messages", error);
+        } else {
+          console.log("[Chat] inserted messages", data);
+        }
+
         get().updateCurrentSession((session) => {
           session.messages = session.messages.concat();
           session.lastUpdate = Date.now();
@@ -292,8 +403,29 @@ export const useChatStore = createPersistStore(
       },
 
       async onUserInput(content: string, attachImages?: string[]) {
+        const userId = localStorage.getItem("userId");
+        const topic = get().currentSession().topic;
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
+
+        // save a new message of user to supabase
+        const { data, error } = await supabase
+          .from("messages")
+          .insert([
+            {
+              user_id: userId,
+              message: content,
+              topic: topic,
+              role: "user",
+            },
+          ])
+          .select();
+
+        if (error) {
+          console.error("[Chat] failed to insert messages", error);
+        } else {
+          console.log("[Chat] inserted messages", data);
+        }
 
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
@@ -318,6 +450,7 @@ export const useChatStore = createPersistStore(
             }),
           );
         }
+
         let userMessage: ChatMessage = createMessage({
           role: "user",
           content: mContent,

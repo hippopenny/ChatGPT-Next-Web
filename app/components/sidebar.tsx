@@ -168,7 +168,7 @@ export function SideBar(props: { className?: string }) {
       <div
         className="chatwithme"
         onClick={() => {
-          chatStore.newSession(allMasks[0]);
+          chatStore.getSession(allMasks[0]);
           navigate(Path.Chat);
         }}
       >
